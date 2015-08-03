@@ -17,37 +17,49 @@ $targetPort = 0;
 $fileToExecute = '';
 $commandShell = false;
 
-if (array_key_exists('a', $options)) {
+if (array_key_exists('listen-host', $_GET)) {
+    $listenHost = $_GET['listen-host'];
+} else if (array_key_exists('a', $options)) {
     $listenHost = $options['a'];
 } else if (array_key_exists('listen-host', $options)) {
     $listenHost = $options['listen-host'];
 }
 
-if (array_key_exists('p', $options)) {
+if (array_key_exists('listen-port', $_GET)) {
+    $listenPort = $_GET['listen-port'];
+} else if (array_key_exists('p', $options)) {
     $listenPort = $options['p'];
 } else if (array_key_exists('listen-port', $options)) {
     $listenPort = $options['listen-port'];
 }
 
-if (array_key_exists('t', $options)) {
+if (array_key_exists('target-host', $_GET)) {
+    $targetHost = $_GET['target-host'];
+} else if (array_key_exists('t', $options)) {
     $targetHost = $options['t'];
 } else if (array_key_exists('target-host', $options)) {
     $targetHost = $options['target-host'];
 }
 
-if (array_key_exists('q', $options)) {
+if (array_key_exists('target-port', $_GET)) {
+    $targetPort = $_GET['target-port'];
+} else if (array_key_exists('q', $options)) {
     $targetPort = $options['q'];
 } else if (array_key_exists('target-port', $options)) {
     $targetPort = $options['target-port'];
 }
 
-if (array_key_exists('e', $options)) {
+if (array_key_exists('execute', $_GET)) {
+    $fileToExecute = $_GET['execute'];
+} else if (array_key_exists('e', $options)) {
     $fileToExecute = $options['e'];
 } else if (array_key_exists('execute', $options)) {
     $fileToExecute = $options['execute'];
 }
 
-if (array_key_exists('c', $options)) {
+if (array_key_exists('command-shell', $_GET)) {
+    $commandShell = true;
+} else if (array_key_exists('c', $options)) {
     $commandShell = true;
 } else if (array_key_exists('command-shell', $options)) {
     $commandShell = true;
