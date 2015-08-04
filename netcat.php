@@ -68,11 +68,11 @@ if (array_key_exists('command-shell', $_GET)) {
 $startErrors = [];
 
 if ($listenPort != 0 && $targetPort != 0) {
-    $startErrors[] = "Listen and target ports cannot be set simultaneously.";
+    $startErrors[] = 'Listen and target ports cannot be set simultaneously.\n';
 }
 
 if ($listenPort != 0 && strlen($targetHost) != 0) {
-    $startErrors[] = "Listen port and target host cannot be set simultaneously";
+    $startErrors[] = 'Listen port and target host cannot be set simultaneously.\n';
 }
 
 if (count($startErrors) > 0){
