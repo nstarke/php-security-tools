@@ -61,5 +61,74 @@ if (count($startErrors) > 0) {
     echo join(' ', $startErrors);
     exit(1);
 }
-// TODO: write proxy logic
+
+$localSocket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+
+socket_bind($localSocket, $localHost, $localPort) or die('Could not bind to address (is it in use?)');
+
+socket_listen($localSocket, 5);
+
+
+while (true) {
+  $localClient = socket_accept($localSocket);
+  $localBuffer = '';
+  while (true) {
+    $localInput = socket_read($localClient, 4096);
+    $localBuffer .= $localInput;
+    if ($localInput < 4096) {
+        break;
+    }
+  }
+
+  $remoteSocket = fsockopen($remoteHost, $remotePort, $errno, $errstr, 30);
+  echo "[==>] Local request heading out.\n";
+  hex_dump($localBuffer);
+  fwrite($remoteSocket, $localBuffer);
+
+  $remoteBuffer = '';
+  while (true) {
+    $remoteResponse = fgets($remoteSocket, 4096);
+    $remoteBuffer .= $remoteResponse;
+    if ($remoteResponse < 4096) {
+        break;
+    }
+  }
+
+  echo "[<==] Remote response coming in.\n";
+    hex_dump($remoteBuffer);
+    socket_write($localClient, $remoteBuffer);
+    fclose($remoteSocket);
+    socket_close($localClient);
+}
+
+# from http://stackoverflow.com/questions/1057572/how-can-i-get-a-hex-dump-of-a-string-in-php
+function hex_dump($data, $newline="\n")
+{
+  static $from = '';
+  static $to = '';
+
+  static $width = 16; # number of bytes per line
+
+  static $pad = '.'; # padding for non-visible characters
+
+  if ($from==='')
+  {
+      for ($i=0; $i<=0xFF; $i++)
+            {
+            $from .= chr($i);
+            $to .= ($i >= 0x20 && $i <= 0x7E) ? chr($i) : $pad;
+                }
+        }
+
+    $hex = str_split(bin2hex($data), $width*2);
+    $chars = str_split(strtr($data, $from, $to), $width);
+
+      $offset = 0;
+      foreach ($hex as $i => $line)
+          {
+          echo sprintf('%6X',$offset).' : '.implode(' ', str_split($line,2)) . ' [' . $chars[$i] . ']' . $newline;
+          $offset += $width;
+        }
+}
+
 ?>
