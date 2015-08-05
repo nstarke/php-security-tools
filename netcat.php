@@ -1,14 +1,31 @@
 <?php
 $options = getopt(
-  'a:p:t:q:e:c', [
+  'a:p:t:q:e:ch', [
       'listen-host:',
       'listen-port:',
       'target-host:',
       'target-port:',
       'execute:',
-      'command-shell'
+      'command-shell',
+      'help'
     ]
   );
+
+if (array_key_exists('h', $options) || array_key_exists('help', $options)) {
+    echo "PHP Netcat tool\n";
+    echo "\n";
+    echo "Usage: php netcat.php --listen-host <listen-host>, --listen-port <listen-port> --target-host <target-host> --target-port <target-port> --execute <command> --command-shell\n";
+    echo "\n";
+    echo "-a, --listen-host: The local host/ip to listen on\n";
+    echo "-p, --listen-port: The local port to listen on\n";
+    echo "-t, --target-host: The remote host to connect to\n";
+    echo "-q, --target-port: The remote port to connect to\n";
+    echo "-e, --execute: Command/program to execute upon connection\n";
+    echo "-c, --command-shell: Return a command shell\n";
+    echo "-h, --help: Show this menu\n";
+    echo "\n";
+    exit(0);
+}
 
 $listenHost = '0.0.0.0';
 $listenPort = 0;
