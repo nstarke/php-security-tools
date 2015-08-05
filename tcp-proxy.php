@@ -1,15 +1,30 @@
 <?php
-$options = getopt('l:p:r:q', [
+$options = getopt('l:p:r:q:h', [
   'local-host:',
   'local-port:',
   'remote-host:',
-  'remote-port:'
+  'remote-port:',
+  'help'
 ]);
 
 $localHost = '0.0.0.0';
 $localPort = 0;
 $remoteHost = '';
 $remotePort = 0;
+
+if (array_key_exists('h', $options) || array_key_exists('help', $options)) {
+    echo "PHP TCP Proxy Tool\n";
+    echo "\n";
+    echo "Usage: php tcp-proxy.php --local-host <local-host> --local-port <local-port> --remote-host <remote-host> --remote-port <remote-post> --help\n";
+    echo "\n";
+    echo "-l, --local-host: The local host ip to listen for connections on\n";
+    echo "-p, --local-port: The local port to listen for connections on\n";
+    echo "-r, --remote-host: The remote host to forward connections to\n";
+    echo "-q, --remote-port: The remote port to forward connectiosn to\n";
+    echo "-h, --help: Show this help menu\n";
+    echo "\n";
+    exit();
+}
 
 if (array_key_exists('local-host', $_GET)) {
    $localHost = $_GET['local-host'];
