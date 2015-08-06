@@ -1,9 +1,9 @@
 <?php
+require('vendor/autoload.php');
 
-$options = getopt('r:p:f:k:u:h', [
+$options = getopt('r:p:k:u:h', [
   'remote-host:',
   'remote-port:',
-  'forward-port:',
   'key-path:',
   'username:',
   'help'
@@ -11,23 +11,27 @@ $options = getopt('r:p:f:k:u:h', [
 
   $remoteHost = '';
   $remotePort = 0;
-  $forwardPort = 0;
   $keyPath = '';
   $username = '';
+  $password = '';
 
   if (array_key_exists('h', $options) || array_key_exists('help', $options)) {
       echo "PHP SSH Tunnel";
       echo "\n";
-      echo "Usage: php ssh-tunnel.php --remote-host [remote-host] --remote-port [remote-port] --forward-port [forward-port] --key-path [key-path] --username [username] --help";
+      echo "Usage: php ssh-tunnel.php --remote-host [remote-host] --remote-port [remote-port] --key-path [key-path] --username [username] --help";
       echo "\n";
       echo "-r, --remote-host: Remote host to connect back to.\n";
       echo "-p, --remote-port: Remote post to connect back to.\n";
-      echo "-f, --forward-port: Port to forward on on remote host.\n";
       echo "-k, --key-path: Local path for ssh key.\n";
       echo "-u, --username: SSH Username.\n";
       echo "-h, --help: Show this menu.\n";
       echo "\n";
       exit();
+  }
+
+  // Password can be overridden with HTTP GET Query String parameter.
+  if (array_key_exists('password', $_GET)) {
+      $password = urldecode($_GET['password']);
   }
 
   if (array_key_exists('remote-host', $_GET)) {
@@ -42,16 +46,8 @@ $options = getopt('r:p:f:k:u:h', [
       $remotePort = $_GET['remote-port'];
   } else if (array_key_exists('p', $options)) {
       $remotePort = $options['p'];
-  } else if (array_key_exists('forward-port', $options)) {
-      $remotePort = $options['forward-port'];
-  }
-
-  if (array_key_exists('forward-port', $_GET)) {
-      $forwardPort = $_GET['forward-port'];
-  } else if (array_key_exists('f', $options)) {
-      $forwardPort = $options['f'];
-  } else if (array_key_exists('forward-port', $options)) {
-      $forwardPort = $options['forward-port'];
+  } else if (array_key_exists('remote-port', $options)) {
+      $remotePort = $options['remote-port'];
   }
 
   if (array_key_exists('key-path', $_GET)) {
@@ -63,25 +59,21 @@ $options = getopt('r:p:f:k:u:h', [
   }
 
   if (array_key_exists('username', $_GET)) {
-      $keyPath = $_GET['username'];
+      $username = $_GET['username'];
   } else if (array_key_exists('u', $options)) {
-      $keyPath = $options['u'];
+      $username = $options['u'];
   } else if (array_key_exists('username', $options)) {
-      $keyPath = $options['username'];
+      $username = $options['username'];
   }
 
   $startErrors = [];
 
-  if (strlen($remoteHost) > 0) {
-      $startErrors[] = "Remote Host is required";
+  if (strlen($remoteHost) == 0) {
+      $startErrors[] = "Remote Host is required.";
   }
 
   if ($remotePort == 0) {
-      $startErrors[] = "Remote Port is required";
-  }
-
-  if ($forwardPort == 0) {
-      $startErrors[] = "Forward Port is required";
+      $startErrors[] = "Remote Port is required.";
   }
 
   if (count($startErrors) > 0) {
@@ -89,5 +81,50 @@ $options = getopt('r:p:f:k:u:h', [
     exit();
   }
 
-  // Write SSH Tunnel Logic
+  $ssh = new Net_SSH2($remoteHost, $remotePort);
+  if (strlen($keyPath) > 0) {
+    echo 'Using Key: ' . $keyPath . "\n";
+    $privateKey = file_get_contents($keyPath);
+    $key = new Crypt_RSA();
+    if (strlen($password) == 0) {
+      echo "Please enter key password:\n";
+      system('stty -echo');
+      $password = trim(fgets(STDIN));
+      system('stty echo');
+    }
+
+    if (strlen($password) > 0) {
+      $key->setPassword($password);
+    }
+
+    $key->loadKey($privateKey);
+
+    if ($ssh->login($username, $key)) {
+        shellOut($ssh);
+    } else {
+        echo "Login Failed!\n";
+    }
+  } else {
+
+    if (strlen($password) == 0) {
+      echo "Please enter password:\n";
+      system('stty -echo');
+      $password = trim(fgets(STDIN));
+      system('stty echo');
+    }
+
+    if ($ssh->login($username, $password)) {
+        shellOut($ssh);
+    } else {
+        echo "Login Failed!\n";
+    }
+  }
+
+  function shellOut($ssh) {
+    while (true) {
+      echo "$ ";
+      $input = fgets(STDIN);
+      echo $ssh->exec($input);
+    }
+  }
 ?>
