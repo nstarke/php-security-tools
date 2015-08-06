@@ -1,11 +1,12 @@
 <?php
 
-$options = getopt('r:p:f:k:u:', [
+$options = getopt('r:p:f:k:u:h', [
   'remote-host:',
   'remote-port:',
   'forward-port:',
   'key-path:',
-  'username:'
+  'username:',
+  'help'
   ]);
 
   $remoteHost = '';
@@ -13,6 +14,21 @@ $options = getopt('r:p:f:k:u:', [
   $forwardPort = 0;
   $keyPath = '';
   $username = '';
+
+  if (array_key_exists('h', $options) || array_key_exists('help', $options)) {
+      echo "PHP SSH Tunnel";
+      echo "\n";
+      echo "Usage: php ssh-tunnel.php --remote-host [remote-host] --remote-port [remote-port] --forward-port [forward-port] --key-path [key-path] --username [username] --help";
+      echo "\n";
+      echo "-r, --remote-host: Remote host to connect back to.\n";
+      echo "-p, --remote-port: Remote post to connect back to.\n";
+      echo "-f, --forward-port: Port to forward on on remote host.\n";
+      echo "-k, --key-path: Local path for ssh key.\n";
+      echo "-u, --username: SSH Username.\n";
+      echo "-h, --help: Show this menu.\n";
+      echo "\n";
+      exit();
+  }
 
   if (array_key_exists('remote-host', $_GET)) {
       $remoteHost = $_GET['remote-host'];
