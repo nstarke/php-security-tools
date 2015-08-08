@@ -35,8 +35,8 @@ php ssh-tunnel.php --remote-host 192.168.0.1 --remote-port 22 --key-path /path/t
 
 Fuzz base url with word list and check for response codes 200 and 201:
 ```
-php url-fuzzer.php --base-url http://localhost:3000/FUZZ.php --wordlist /path/to/wordlist --response codes 200,201
+php url-fuzzer.php --base-url http://localhost:3000/FUZZ.php --wordlist /path/to/wordlist --response-codes 200,201
 ```
 
-Likewise, these scripts can be access via a browser, with query string parameters instead of commandline arguments.
+Likewise, these scripts can be access via a browser, with query string parameters instead of command line arguments.
 
