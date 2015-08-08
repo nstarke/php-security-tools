@@ -23,19 +23,25 @@
   $wordListPath = '';
   $responseCodes = [];
 
-  if (array_key_exists('b', $options)) {
+  if (array_key_exists('base-url', $_GET)) {
+    $baseUrl = $_GET['base-url'];
+  } else if (array_key_exists('b', $options)) {
     $baseUrl = $options['b'];
   } else if (array_key_exists('base-url', $options)) {
     $baseUrl = $options['base-url'];
   }
 
-  if (array_key_exists('w', $options)) {
+  if (array_key_exists('wordlist', $_GET)) {
+      $wordListPath = $_GET['wordlist'];
+  } else if (array_key_exists('w', $options)) {
       $wordListPath = $options['w'];
   } else if (array_key_exists('wordlist', $options)) {
       $wordListPath = $options['wordlist'];
   }
 
-  if (array_key_exists('r', $options)) {
+  if (array_key_exists('response-codes')) {
+      $responseCodes = split(',', $_GET['response-codes']);
+  } else if (array_key_exists('r', $options)) {
       $responseCodes = split(',', $options['r']);
   } else if (array_key_exists('response-codes', $options)) {
       $responseCodes = split(',', $options['response-codes']);
