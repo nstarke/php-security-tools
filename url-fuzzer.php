@@ -60,5 +60,22 @@
     exit();
   }
 
-  //Implement Fuzz logic
+  $handle = fopen($wordListPath, 'r');
+  if ($handle) {
+    while (($line = fgets($handle)) !== false) {
+      if (strpos($line, '#') === false) {
+        $full = str_replace('FUZZ', urlencode(trim($line)), $baseUrl);
+        $code = get_headers($full, 1)[0];
+        foreach ($responseCodes as $responseCode) {
+          if (strpos($code, $responseCode) != false) {
+            echo $full . "\n";
+            break;
+          }
+        }
+      }
+    }
+    fclose($handle);
+  } else {
+    echo "Word list file not found\n";
+  }
 ?>
