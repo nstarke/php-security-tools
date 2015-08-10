@@ -39,7 +39,7 @@
       $wordListPath = $options['wordlist'];
   }
 
-  if (array_key_exists('response-codes', $options)) {
+  if (array_key_exists('response-codes', $_GET)) {
       $responseCodes = split(',', $_GET['response-codes']);
   } else if (array_key_exists('r', $options)) {
       $responseCodes = split(',', $options['r']);
@@ -65,23 +65,24 @@
     echo join("\n", $startErrors);
     exit();
   }
-
-  $handle = fopen($wordListPath, 'r');
-  if ($handle) {
-    while (($line = fgets($handle)) !== false) {
-      if (strpos($line, '#') === false) {
-        $full = str_replace('FUZZ', urlencode(trim($line)), $baseUrl);
-        $code = get_headers($full, 1)[0];
-        foreach ($responseCodes as $responseCode) {
-          if (strpos($code, $responseCode) != false) {
-            echo $full . "\n";
-            break;
-          }
-        }
-      }
-    }
-    fclose($handle);
-  } else {
-    echo "Word list file not found\n";
-  }
+  var_dump($responseCodes);
+  /* $handle = fopen($wordListPath, 'r'); */
+  /* if ($handle) { */
+  /*   while (($line = fgets($handle)) !== false) { */
+  /*     if (strpos($line, '#') === false) { */
+  /*       $full = str_replace('FUZZ', urlencode(trim($line)), $baseUrl); */
+  /*       $code = get_headers($full, 1)[0]; */
+  /*       foreach ($responseCodes as $responseCode) { */
+  /*         echo $code . ' ' . var_dump($responseCodes); */
+  /*         if (strpos($code, $responseCode) != false) { */
+  /*           echo $full . "\n"; */
+  /*           break; */
+  /*         } */
+  /*       } */
+  /*     } */
+  /*   } */
+  /*   fclose($handle); */
+  /* } else { */
+  /*   echo "Word list file not found\n"; */
+  /* } */
 ?>
