@@ -39,7 +39,7 @@
       $wordListPath = $options['wordlist'];
   }
 
-  if (array_key_exists('response-codes')) {
+  if (array_key_exists('response-codes', $options)) {
       $responseCodes = split(',', $_GET['response-codes']);
   } else if (array_key_exists('r', $options)) {
       $responseCodes = split(',', $options['r']);
