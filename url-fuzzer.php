@@ -39,7 +39,7 @@
       $wordListPath = $options['wordlist'];
   }
 
-  if (array_key_exists('response-codes')) {
+  if (array_key_exists('response-codes', $_GET)) {
       $responseCodes = split(',', $_GET['response-codes']);
   } else if (array_key_exists('r', $options)) {
       $responseCodes = split(',', $options['r']);
@@ -63,7 +63,7 @@
 
   if (count($startErrors) > 0) {
     echo join("\n", $startErrors);
-    exit();
+    exit(1);
   }
 
   $handle = fopen($wordListPath, 'r');

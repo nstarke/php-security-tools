@@ -78,7 +78,7 @@ $options = getopt('r:p:k:u:h', [
 
   if (count($startErrors) > 0) {
     echo join(' ', $startErrors);
-    exit();
+    exit(1);
   }
 
   $ssh = new Net_SSH2($remoteHost, $remotePort);
