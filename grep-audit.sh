@@ -23,3 +23,6 @@ egrep -r --include "*.php" -e "\-\>query\(|\->\>exec\(" .
 
 # this command will return all PHP files in a directory for file system access
 egrep -r --include "*.php" -e "fopen\(|fread\(|fwrite\(|fclose\(" .
+
+# this command will return instances where crypto operations are performed
+egrep -r --include "*.php" -e "mcrypt_|openssl_|mhash_|random_|crack_" .
