@@ -1,8 +1,9 @@
 <?php
-  $options = getopt('b:w:r:h', [
+  $options = getopt('b:w:r:v:h', [
     'base-url:',
     'wordlist:',
     'response-codes:',
+    'verb:',
     'help'
     ]);
 
@@ -13,6 +14,7 @@
     echo "-b, --base-url: Base URL to fuzz against.  Use the string 'FUZZ' where words from the word list need to be inserted.\n";
     echo "-w, --word-list: Word list to fuzz.\n";
     echo "-r, --response-codes: Response codes to return results for.\n";
+    echo "-v, --verb: Which HTTP Verb to use.  Defaults to GET.\n";
     echo "-h, --help: Show this menu.\n";
     echo "\n";
 
@@ -22,6 +24,7 @@
   $baseUrl = '';
   $wordListPath = '';
   $responseCodes = [];
+  $verb = 'GET';
 
   if (array_key_exists('base-url', $_GET)) {
     $baseUrl = $_GET['base-url'];
@@ -47,6 +50,14 @@
       $responseCodes = split(',', $options['response-codes']);
   }
 
+  if (array_key_exists('verb', $_GET)) {
+      $verb = $_GET['verb'];
+  } else if (array_key_exists('v', $options)) {
+      $verb = $options['v'];
+  } else if (array_key_exists('verb', $options)) {
+      $verb = $options['verb'];
+  }
+
   $startErrors = [];
 
   if (strlen($baseUrl) == 0) {
@@ -66,6 +77,13 @@
     exit(1);
   }
 
+  stream_context_set_default(
+    array(
+        'http' => array(
+            'method' => $verb
+        )
+    )
+  );
   $handle = fopen($wordListPath, 'r');
   if ($handle) {
     while (($line = fgets($handle)) !== false) {
