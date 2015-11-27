@@ -16,10 +16,10 @@ egrep -r --include "*.php" -e "echo\s+\\$.*;" .
 egrep -r --include "*.php" -e "\`.*\`" .
 
 # this command will return hard-coded database credentials / addresses
-egrep -r --include "*.php" -e "(mysql_connect|mysqli)\((\"|\').+(\"|\')\,\s+(\"|\').+(\"|\')\,\s+(\"|\').+(\"|\')" .
+egrep -r --include "*.php" -e "(mysql_connect|mysqli)\(\s*(\"|\').+(\"|\')\,\s*(\"|\').+(\"|\')\,\s*(\"|\').+(\"|\')" .
 
 # this command will return potential unsafe SQL query executions:
-egrep -r --include "*.php" -e "\->(query|exec)\(\".*\".*\." .
+egrep -r --include "*.php" -e "\->(query|exec)\(\s*\".*\".*\." .
 
 # this command will return all PHP files in a directory for file system access
 egrep -r --include "*.php" -e "(fopen|fread|fwrite|fclose)\(" .
@@ -29,7 +29,7 @@ egrep -r --include "*.php" -e "mcrypt_|openssl_|mhash_|random_|crack_" .
 
 # this command will return instances of weak PRNG's
 # look for hard coded seed values!
-egrep -r --include "*.php" -e "(mt_srand|lcg_value|rand)\(\d+" .
+egrep -r --include "*.php" -e "(mt_srand|lcg_value|rand)\(\s*\d+" .
 
 # this command will return instances where XXE might be possible
 # look for 'true'
@@ -39,4 +39,4 @@ egrep -r --include "*.php" -e "libxml_disable_entity_loader\(" .
 egrep -r --include "*.php" -e "(\\$|\->)port\s+\=\s+\d+" .
 
 # this command will look for hardcoded usernames and passwords
-egrep -r --include "*.php" -e "(\\$|\->)(user|pass)\s+=\s+\".*\"" .
+egrep -r --include "*.php" -e "(\\$|\->)?(\\[\")?(user|pass|username|password)(\"\\])?\s*=\s*\".*\"" .
