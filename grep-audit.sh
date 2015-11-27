@@ -9,7 +9,7 @@ egrep -r --include "*.php" -e "(eval|assert|preg_replace)\(" .
 
 # this command returns instances where variables are echoed out without htmlspecialchars()
 # it can be useful for finding XSS vulnerabilities in PHP code
-egrep -r --include "*.php" -e "echo\s+\\$.*;" .
+egrep -r --include "*.php" -e "echo\s*\\$.*;" .
 
 # this command returns all instances of the back-tick (`) operator, which is used to execute arbitary shell commands in PHP
 # many times this returns string literals
@@ -36,7 +36,7 @@ egrep -r --include "*.php" -e "(mt_srand|lcg_value|rand)\(\s*\d+" .
 egrep -r --include "*.php" -e "libxml_disable_entity_loader\(" .
 
 # look for hard coded port values
-egrep -r --include "*.php" -e "(\\$|\->)port\s+\=\s+\d+" .
+egrep -r --include "*.php" -e "(\\$|\->)port\s*\=\s*\d+" .
 
 # this command will look for hardcoded usernames and passwords
 egrep -r --include "*.php" -e "(\\$|\->)?(\\[\")?(user|pass|username|password)(\"\\])?\s*=\s*\".*\"" .
