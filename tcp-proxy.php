@@ -89,30 +89,32 @@ while (true) {
   $localBuffer = '';
   while (true) {
     $localInput = socket_read($localClient, 4096);
+    $localInput = str_replace($localHost . ':' . $localPort, $remoteHost . ':' . $remotePort, $localInput);
     $localBuffer .= $localInput;
     if ($localInput < 4096) {
         break;
     }
   }
 
-  $remoteSocket = fsockopen($remoteHost, $remotePort, $errno, $errstr, 30);
   echo "[==>] Local request heading out.\n";
   hex_dump($localBuffer);
-  fwrite($remoteSocket, $localBuffer);
-
+  $remoteSocket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+  socket_connect($remoteSocket, $remoteHost, $remotePort);
+  socket_write($remoteSocket, $localBuffer);
   $remoteBuffer = '';
   while (true) {
-    $remoteResponse = fgets($remoteSocket, 4096);
+    $remoteResponse = socket_read($remoteSocket, 4096);
+    $remoteResponse = str_replace($remoteHost . ':' . $remotePort, $localHost . ':' . $localPort, $remoteResponse);
     $remoteBuffer .= $remoteResponse;
     if ($remoteResponse < 4096) {
         break;
     }
   }
 
-  echo "[<==] Remote response coming in.\n";
+    echo "[<==] Remote response coming in.\n";
     hex_dump($remoteBuffer);
     socket_write($localClient, $remoteBuffer);
-    fclose($remoteSocket);
+    socket_close($remoteSocket);
     socket_close($localClient);
 }
 
