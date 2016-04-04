@@ -77,21 +77,24 @@ $options = getopt('r:p:k:u:h', [
   }
 
   if (count($startErrors) > 0) {
-    echo join(' ', $startErrors);
+    echo join('\n', $startErrors);
     exit(1);
   }
 
   $ssh = new Net_SSH2($remoteHost, $remotePort);
-  if (strlen($keyPath) > 0) {
-    echo 'Using Key: ' . $keyPath . "\n";
-    $privateKey = file_get_contents($keyPath);
-    $key = new Crypt_RSA();
-    if (strlen($password) == 0) {
+
+  if (strlen($password) == 0) {
       echo "Please enter key password:\n";
       system('stty -echo');
       $password = trim(fgets(STDIN));
       system('stty echo');
-    }
+  }
+
+  if (strlen($keyPath) > 0) {
+    echo 'Using Key: ' . $keyPath . "\n";
+    $privateKey = file_get_contents($keyPath);
+    $key = new Crypt_RSA();
+
 
     if (strlen($password) > 0) {
       $key->setPassword($password);
@@ -105,14 +108,6 @@ $options = getopt('r:p:k:u:h', [
         echo "Login Failed!\n";
     }
   } else {
-
-    if (strlen($password) == 0) {
-      echo "Please enter password:\n";
-      system('stty -echo');
-      $password = trim(fgets(STDIN));
-      system('stty echo');
-    }
-
     if ($ssh->login($username, $password)) {
         shellOut($ssh);
     } else {

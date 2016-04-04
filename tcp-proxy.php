@@ -73,7 +73,7 @@ if ($remotePort == 0) {
 }
 
 if (count($startErrors) > 0) {
-    echo join(' ', $startErrors);
+    echo join('\n', $startErrors);
     exit(1);
 }
 
@@ -82,7 +82,6 @@ $localSocket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 socket_bind($localSocket, $localHost, $localPort) or die('Could not bind to address (is it in use?)');
 
 socket_listen($localSocket, 5);
-
 
 while (true) {
   $localClient = socket_accept($localSocket);
@@ -111,11 +110,11 @@ while (true) {
     }
   }
 
-    echo "[<==] Remote response coming in.\n";
-    hex_dump($remoteBuffer);
-    socket_write($localClient, $remoteBuffer);
-    socket_close($remoteSocket);
-    socket_close($localClient);
+  echo "[<==] Remote response coming in.\n";
+  hex_dump($remoteBuffer);
+  socket_write($localClient, $remoteBuffer);
+  socket_close($remoteSocket);
+  socket_close($localClient);
 }
 
 # from http://stackoverflow.com/questions/1057572/how-can-i-get-a-hex-dump-of-a-string-in-php

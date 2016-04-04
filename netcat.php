@@ -93,7 +93,7 @@ if ($listenPort == 0 && strlen($targetHost) == 0) {
 }
 
 if (count($startErrors) > 0){
-    echo join(' ', $startErrors);
+    echo join('\n', $startErrors);
     exit(1);
 }
 
