@@ -1,10 +1,11 @@
 <?php
-  $options = getopt('b:w:r:v:h', [
+  $options = getopt('b:w:r:v:o:h', [
     'base-url:',
     'wordlist:',
     'response-codes:',
     'verb:',
-    'help'
+    'option:',
+    'help',
     ]);
 
   if (array_key_exists('h', $options) || array_key_exists('help', $options)) {
@@ -15,6 +16,7 @@
     echo "-w, --word-list: Word list to fuzz.\n";
     echo "-r, --response-codes: Response codes to return results for.\n";
     echo "-v, --verb: Which HTTP Verb to use.  Defaults to GET.\n";
+    echo "-o, --body: Request body to use.\n";
     echo "-h, --help: Show this menu.\n";
     echo "\n";
 
@@ -25,6 +27,7 @@
   $wordListPath = '';
   $responseCodes = [];
   $verb = 'GET';
+  $body = '';
 
   if (array_key_exists('base-url', $_GET)) {
     $baseUrl = $_GET['base-url'];
@@ -53,9 +56,17 @@
   if (array_key_exists('verb', $_GET)) {
       $verb = $_GET['verb'];
   } else if (array_key_exists('v', $options)) {
-      $verb = $options['v'];
+    $verb = $options['v'];
   } else if (array_key_exists('verb', $options)) {
       $verb = $options['verb'];
+  }
+
+  if (array_key_exists('body', $_GET)) {
+    $body = $_GET['body'];
+  } else if (array_key_exists('o', $options)) {
+    $body = $options['o'];
+  } else if (array_key_exists('body', $options)){
+    $body = $options['body'];
   }
 
   $startErrors = [];
@@ -84,12 +95,21 @@
         )
     )
   );
+
   $handle = fopen($wordListPath, 'r');
+
   if ($handle) {
     while (($line = fgets($handle)) !== false) {
       if (strpos($line, '#') === false) {
         $full = str_replace('FUZZ', urlencode(trim($line)), $baseUrl);
-        $code = get_headers($full, 1)[0];
+        $code = 0;
+        if (strlen($body) == 0) {
+          $code = get_headers($full, 1)[0];
+        } else {
+          $reqOptions = array('http' => array('content' => $body, 'ignore_errors' => true, 'method' => $verb));
+          $context = stream_context_create($reqOptions);
+          $code = @file_get_contents($full, false, $context);
+        }
         foreach ($responseCodes as $responseCode) {
           if (strpos($code, $responseCode) != false) {
             echo $full . "\n";
